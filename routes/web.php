@@ -5,8 +5,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+use App\Http\Controllers\alternativasepController;Route::resource('alternativasep', alternativasepController::class);
+use App\Http\Controllers\regionalesController;Route::resource('regionales', regionalesController::class);
 
-Route::get('alternativasep/reporte', [\App\Http\Controllers\alternativasepController::class, 'generarReporte'])->name('alternativasep.reporte');use App\Http\Controllers\regionalesController; Route::resource('regionales', regionalesController::class);
 use App\Http\Controllers\programasdeformacionController; Route::resource('programasdeformacion', programasdeformacionController::class);
 use App\Http\Controllers\tiposdocumentosController; Route::resource('tiposdocumentos', tiposdocumentosController::class);
 use App\Http\Controllers\rolesadministrativosController; Route::resource('rolesadministrativos', rolesadministrativosController::class);

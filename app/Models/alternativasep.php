@@ -8,16 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class alternativasep extends Model
 {
     use HasFactory;
-//uiiuku
+
     protected $table = 'tblalternativasep';
     protected $primaryKey = 'NIS';
 
     protected $fillable = [
         'Nombre',
         'Descripcion',
-        'AlternativasepPDF ;',
+        'AlternativasepPDF',
+
     ];
 
     public $timestamps = false;
 }
-//comentario para validAR EL REPOSITORIO

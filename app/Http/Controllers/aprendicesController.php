@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\aprendices;
-use App\Models\regionales;
+
 use Illuminate\Http\Request;
 
 class aprendicesController extends Controller
