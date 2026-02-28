@@ -14,6 +14,7 @@ class rolesadministrativos extends Model
 
     protected $fillable = [
         'Descripcion',
+        'RolesadministrativosPDF',
     ];
 
     public $timestamps = false;

@@ -4,16 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\alternativasep;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Storage;
 
-
-class
-alternativasepController extends Controller
-
-
+class alternativasepController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $alternativasep = alternativasep::all();
@@ -27,64 +22,82 @@ alternativasepController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validamos incluyendo el nuevo campo del PDF
         $data = $request->validate([
             'Nombre' => 'required|string|max:100',
             'Descripcion' => 'required|string|max:200',
-            'AlternativasepPDF' => 'required|mimes:pdf|max:200' // 'required' o 'nullable' según prefieras
+            'AlternativasepPDF' => 'required|mimes:pdf|max:2048'
         ]);
 
-        // 2. Verificamos si se subió el archivo
+        //$data['Nombre']= Crypt::encrypt($data['Nombre']);
+        //ENCRIPTACIÓN DE LA VARIABLE NOMBRE DE LA TABLA ALTERNATIVASEP
+
         if ($request->hasFile('AlternativasepPDF')) {
 
-            // Creamos el nombre con el formato: cam_ + marca de tiempo (para que no se repitan)
             $nombreArchivo = 'cam_' . time() . '.' . $request->file('AlternativasepPDF')->extension();
 
-            // Guardamos el archivo en 'storage/app/public/pdfs'
-            // Gracias al storage:link, será accesible desde 'public/storage/pdfs'
             $request->file('AlternativasepPDF')->storeAs('pdfs', $nombreArchivo, 'public');
 
-            // Agregamos el nombre del archivo al array de datos para la BD
             $data['AlternativasepPDF'] = $nombreArchivo;
         }
 
-        // 3. Creamos el registro en la base de datos con todos los campos
-        \App\Models\alternativasep::create($data);
+        alternativasep::create($data);
 
         return redirect()->route('alternativasep.index')
-            ->with('success', 'Registro y PDF guardados correctamente');
+            ->with('success', 'Registro guardado correctamente');
     }
 
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-
+        $alternativasep = alternativasep::findOrFail($id);
+        return view('alternativasep.show', compact('alternativasep'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $alternativasep = alternativasep::findOrFail($id);
+        return view('alternativasep.edit', compact('alternativasep'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $alternativasep = alternativasep::findOrFail($id);
+
+        $data = $request->validate([
+            'Nombre' => 'required|string|max:100',
+            'Descripcion' => 'required|string|max:200',
+            'AlternativasepPDF' => 'nullable|mimes:pdf|max:2048'
+        ]);
+
+        if ($request->hasFile('AlternativasepPDF')) {
+
+            if ($alternativasep->AlternativasepPDF) {
+                Storage::disk('public')->delete('pdfs/' . $alternativasep->AlternativasepPDF);
+            }
+
+            $nombreArchivo = 'cam_' . time() . '.' . $request->file('AlternativasepPDF')->extension();
+
+            $request->file('AlternativasepPDF')->storeAs('pdfs', $nombreArchivo, 'public');
+
+            $data['AlternativasepPDF'] = $nombreArchivo;
+        }
+
+        $alternativasep->update($data);
+
+        return redirect()->route('alternativasep.index')
+            ->with('success', 'Registro actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $alternativasep = alternativasep::findOrFail($id);
+
+        if ($alternativasep->AlternativasepPDF) {
+            Storage::disk('public')->delete('pdfs/' . $alternativasep->AlternativasepPDF);
+        }
+
+        $alternativasep->delete();
+
+        return redirect()->route('alternativasep.index')
+            ->with('success', 'Registro eliminado correctamente');
     }
 }

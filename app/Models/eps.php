@@ -16,6 +16,7 @@ class eps extends Model
         'NumeroDoc',
         'Denominacion',
         'Observaciones',
+        'EpsPDF',
     ];
 
     public $timestamps = false;

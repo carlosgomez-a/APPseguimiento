@@ -21,6 +21,7 @@ class fichascaracterizacion extends Model
         'Observaciones',
         'tblcentroformacion_NIS',
         'tblprogramasdeformacion_NIS',
+        'FichascaracterizacionEPS',
     ];
 
     public $timestamps = false;

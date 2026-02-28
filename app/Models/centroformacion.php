@@ -18,6 +18,7 @@ class centroformacion extends Model
         'Observaciones',
         'Direccion',
         'tblregionales_NIS',
+        'CentroformacionPDF',
     ];
 
     public $timestamps = false;

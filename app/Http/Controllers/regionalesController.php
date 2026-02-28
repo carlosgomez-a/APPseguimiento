@@ -4,40 +4,40 @@ namespace App\Http\Controllers;
 
 use App\Models\regionales;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class regionalesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-
     public function index()
     {
         $regionales = regionales::all();
-
         return view('regionales.index', compact('regionales'));
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('regionales.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $data = $request->validate([
             'Codigo' => 'required|integer',
             'Denominacion' => 'required|string|max:200',
-            'Observaciones' => 'required|string|max:200'
+            'Observaciones' => 'required|string|max:200',
+            'RegionalesPDF' => 'nullable|mimes:pdf|max:2048'
         ]);
+
+        //$data['Denominacion']= Crypt::encrypt($data['Denominacion']);
+        //ENCRIPTACIÓN DE LA VARIABLE Denominacion DE LA TABLA Regionales
+        if ($request->hasFile('RegionalesPDF')) {
+
+            $nombreArchivo = 'reg_' . time() . '.' . $request->file('RegionalesPDF')->extension();
+
+            $request->file('RegionalesPDF')->storeAs('pdfs', $nombreArchivo, 'public');
+
+            $data['RegionalesPDF'] = $nombreArchivo;
+        }
 
         regionales::create($data);
 
@@ -45,36 +45,59 @@ class regionalesController extends Controller
             ->with('success', 'Registro guardado correctamente');
     }
 
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $regional = regionales::findOrFail($id);
+        return view('regionales.show', compact('regional'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $regional = regionales::findOrFail($id);
+        return view('regionales.edit', compact('regional'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $regional = regionales::findOrFail($id);
+
+        $data = $request->validate([
+            'Codigo' => 'required|integer',
+            'Denominacion' => 'required|string|max:200',
+            'Observaciones' => 'required|string|max:200',
+            'RegionalesPDF' => 'nullable|mimes:pdf|max:2048'
+        ]);
+
+        if ($request->hasFile('RegionalesPDF')) {
+
+            if ($regional->RegionalesPDF) {
+                Storage::disk('public')->delete('pdfs/' . $regional->RegionalesPDF);
+            }
+
+            $nombreArchivo = 'reg_' . time() . '.' . $request->file('RegionalesPDF')->extension();
+
+            $request->file('RegionalesPDF')->storeAs('pdfs', $nombreArchivo, 'public');
+
+            $data['RegionalesPDF'] = $nombreArchivo;
+        }
+
+        $regional->update($data);
+
+        return redirect()->route('regionales.index')
+            ->with('success', 'Registro actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $regional = regionales::findOrFail($id);
+
+        if ($regional->RegionalesPDF) {
+            Storage::disk('public')->delete('pdfs/' . $regional->RegionalesPDF);
+        }
+
+        $regional->delete();
+
+        return redirect()->route('regionales.index')
+            ->with('success', 'Registro eliminado correctamente');
     }
 }

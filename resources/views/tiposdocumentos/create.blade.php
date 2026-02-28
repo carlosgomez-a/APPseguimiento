@@ -9,7 +9,7 @@
         </div>
 
         <div class="card-body">
-            <form method="POST" action="{{ route('tiposdocumentos.store') }}">
+            <form method="POST" action="{{ route('tiposdocumentos.store') }}" enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-group">
@@ -22,13 +22,13 @@
                     <input type="text" name="Observaciones" class="form-control" required>
                 </div>
 
-                <button type="submit" class="btn btn-success">
-                    Guardar
-                </button>
+                <div class="form-group">
+                    <label>PDF</label>
+                    <input type="file" name="TiposdocumentosPDF" class="form-control" accept="application/pdf" required>
+                </div>
 
-                <a href="{{ route('tiposdocumentos.index') }}" class="btn btn-secondary">
-                    Cancelar
-                </a>
+                <button type="submit" class="btn btn-success">Guardar</button>
+                <a href="{{ route('tiposdocumentos.index') }}" class="btn btn-secondary">Cancelar</a>
             </form>
         </div>
     </div>

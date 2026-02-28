@@ -15,6 +15,7 @@ class subalternativasep extends Model
 
         'Nombre',
         'Descripcion',
+        'Subalternativasep',
     ];
 
     public $timestamps = false;

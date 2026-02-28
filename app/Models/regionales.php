@@ -16,6 +16,7 @@ class regionales extends Model
         'Codigo',
         'Denominacion',
         'Observaciones',
+        'RegionalesPDF',
     ];
 
     public $timestamps = false;

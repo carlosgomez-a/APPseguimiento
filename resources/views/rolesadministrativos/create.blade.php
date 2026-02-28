@@ -9,23 +9,21 @@
         </div>
 
         <div class="card-body">
-            <form method="POST" action="{{ route('rolesadministrativos.store') }}">
+            <form method="POST" action="{{ route('rolesadministrativos.store') }}" enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-group">
-                    <label>Descripcion</label>
+                    <label>Descripción</label>
                     <input type="text" name="Descripcion" class="form-control" required>
                 </div>
 
-                <br>
+                <div class="form-group">
+                    <label>PDF</label>
+                    <input type="file" name="RolesadministrativosPDF" class="form-control" accept="application/pdf" required>
+                </div>
 
-                <button type="submit" class="btn btn-success">
-                    Guardar
-                </button>
-
-                <a href="{{ route('rolesadministrativos.index') }}" class="btn btn-secondary">
-                    Cancelar
-                </a>
+                <button type="submit" class="btn btn-success">Guardar</button>
+                <a href="{{ route('rolesadministrativos.index') }}" class="btn btn-secondary">Cancelar</a>
             </form>
         </div>
     </div>

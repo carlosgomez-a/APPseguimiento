@@ -299,101 +299,95 @@ return [
     */
 
     'menu' => [
-        // Navbar items:
-        [
-            'type' => 'navbar-search',
-            'text' => 'search',
-            'topnav_right' => true,
-        ],
-        [
-            'type' => 'fullscreen-widget',
-            'topnav_right' => true,
-        ],
 
-        // Sidebar items:
         [
             'type' => 'sidebar-menu-search',
-            'text' => 'search',
+            'text' => 'Buscar',
         ],
-        [
-            'text' => 'blog',
-            'url' => 'admin/blog',
-            'can' => 'manage-blog',
-        ],
-        [
-            'text' => 'pages',
-            'url' => 'admin/pages',
-            'icon' => 'far fa-fw fa-file',
-            'label' => 4,
-            'label_color' => 'success',
-        ],
-        ['header' => 'account_settings'],
-        [
-            'text' => 'profile',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
-        ],
-        [
-            'text' => 'change_password',
-            'url' => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
-        [
-            'text' => 'multilevel',
-            'icon' => 'fas fa-fw fa-share',
-            'submenu' => [
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                        ],
-                        [
-                            'text' => 'level_two',
-                            'url' => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url' => '#',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'text' => 'level_one',
-                    'url' => '#',
-                ],
-            ],
-        ],
-        ['header' => 'labels'],
-        [
-            'text' => 'important',
-            'icon_color' => 'red',
-            'url' => '#',
-        ],
-        [
-            'text' => 'warning',
-            'icon_color' => 'yellow',
-            'url' => '#',
-        ],
-        [
-            'text' => 'information',
-            'icon_color' => 'cyan',
-            'url' => '#',
-        ],
-    ],
 
+        [
+            'text' => 'Dashboard',
+            'url'  => '/home',
+            'icon' => 'fas fa-home',
+        ],
+
+        ['header' => 'GESTIÓN ACADÉMICA'],
+
+        [
+            'text' => 'Alternativas EP',
+            'icon' => 'fas fa-folder',
+            'route' => 'alternativasep.index',
+
+
+        ],
+
+        [
+            'text' => 'Sub Alternativas EP',
+            'icon' => 'fas fa-folder-open',
+            'route' => 'subalternativasep.index',
+        ],
+
+        [
+            'text' => 'Aprendices',
+            'icon' => 'fas fa-user-graduate',
+            'route' => 'aprendices.index',
+        ],
+
+        [
+            'text' => 'Instructores',
+            'icon' => 'fas fa-chalkboard-teacher',
+            'route' => 'instructores.index',
+        ],
+
+        [
+            'text' => 'Fichas de Caracterización',
+            'icon' => 'fas fa-id-card',
+            'route' => 'fichascaracterizacion.index',
+        ],
+
+        [
+            'text' => 'Programas de Formación',
+            'icon' => 'fas fa-book',
+            'route' => 'programasdeformacion.index',
+        ],
+
+        [
+            'text' => 'Centro de Formación',
+            'icon' => 'fas fa-building',
+            'route' => 'centroformacion.index',
+        ],
+
+        [
+            'text' => 'Regionales',
+            'icon' => 'fas fa-map',
+            'route' => 'regionales.index',
+        ],
+
+        [
+            'text' => 'EPS',
+            'icon' => 'fas fa-hospital',
+            'route' => 'eps.index',
+        ],
+
+        [
+            'text' => 'Tipos de Documento',
+            'icon' => 'fas fa-id-badge',
+            'route' => 'tiposdocumentos.index',
+        ],
+
+        [
+            'text' => 'Ente Conformador',
+            'icon' => 'fas fa-sitemap',
+            'route' => 'enteconformador.index',
+        ],
+
+        [
+            'text' => 'Roles Administrativos',
+            'icon' => 'fas fa-user-shield',
+            'route' => 'rolesadministrativos.index',
+        ],
+
+    ],
     /*
     |--------------------------------------------------------------------------
     | Menu Filters

@@ -4,12 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\eps;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class epsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $eps = eps::all();
@@ -24,10 +22,21 @@ class epsController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'NumeroDoc' => 'required|string|max:30',
+            'NumeroDoc' => 'required|string|max:50',
             'Denominacion' => 'required|string|max:200',
-            'Observaciones' => 'required|string|max:200'
+            'Observaciones' => 'nullable|string|max:200',
+            'EpsPDF' => 'required|mimes:pdf|max:2048'
         ]);
+
+
+        //$data['Denominacion']= Crypt::encrypt($data['Denominacion']);
+        //ENCRIPTACIÓN DE LA VARIABLE Denominacion DE LA TABLA eps
+
+        if ($request->hasFile('EpsPDF')) {
+            $nombreArchivo = 'eps_' . time() . '.' . $request->file('EpsPDF')->extension();
+            $request->file('EpsPDF')->storeAs('pdfs', $nombreArchivo, 'public');
+            $data['EpsPDF'] = $nombreArchivo;
+        }
 
         eps::create($data);
 
@@ -35,35 +44,57 @@ class epsController extends Controller
             ->with('success', 'Registro guardado correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $eps = eps::findOrFail($id);
+        return view('eps.show', compact('eps'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $eps = eps::findOrFail($id);
+        return view('eps.edit', compact('eps'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $eps = eps::findOrFail($id);
+
+        $data = $request->validate([
+            'NumeroDoc' => 'required|string|max:50',
+            'Denominacion' => 'required|string|max:200',
+            'Observaciones' => 'nullable|string|max:200',
+            'EpsPDF' => 'nullable|mimes:pdf|max:2048'
+        ]);
+
+        if ($request->hasFile('EpsPDF')) {
+
+            if ($eps->EpsPDF) {
+                Storage::disk('public')->delete('pdfs/' . $eps->EpsPDF);
+            }
+
+            $nombreArchivo = 'eps_' . time() . '.' . $request->file('EpsPDF')->extension();
+            $request->file('EpsPDF')->storeAs('pdfs', $nombreArchivo, 'public');
+            $data['EpsPDF'] = $nombreArchivo;
+        }
+
+        $eps->update($data);
+
+        return redirect()->route('eps.index')
+            ->with('success', 'Registro actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $eps = eps::findOrFail($id);
+
+        if ($eps->EpsPDF) {
+            Storage::disk('public')->delete('pdfs/' . $eps->EpsPDF);
+        }
+
+        $eps->delete();
+
+        return redirect()->route('eps.index')
+            ->with('success', 'Registro eliminado correctamente');
     }
 }

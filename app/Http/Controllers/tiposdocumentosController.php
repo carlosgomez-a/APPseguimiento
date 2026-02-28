@@ -2,27 +2,18 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\tiposdocumentos;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class tiposdocumentosController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-
     public function index()
     {
         $tiposdocumentos = tiposdocumentos::all();
-
         return view('tiposdocumentos.index', compact('tiposdocumentos'));
     }
 
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('tiposdocumentos.create');
@@ -30,49 +21,82 @@ class tiposdocumentosController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'Denominacion' => 'required',
-            'Observaciones' => 'required',
+        $data = $request->validate([
+            'Denominacion' => 'required|string|max:100',
+            'Observaciones' => 'required|string|max:200',
+            'TiposdocumentosPDF' => 'required|mimes:pdf|max:2048'
         ]);
 
-        tiposdocumentos::create($request->all());
+        //$data['Observaciones']= Crypt::encrypt($data['Observaciones']);
+        //ENCRIPTACIÓN DE LA VARIABLE Observaciones DE LA TABLA Tiposdocumentos
 
-        return redirect()
-            ->route('tiposdocumentos.index')
+        if ($request->hasFile('TiposdocumentosPDF')) {
+
+            $nombreArchivo = 'tipdoc_' . time() . '.' . $request->file('TiposdocumentosPDF')->extension();
+
+            $request->file('TiposdocumentosPDF')->storeAs('pdfs', $nombreArchivo, 'public');
+
+            $data['TiposdocumentosPDF'] = $nombreArchivo;
+        }
+
+        tiposdocumentos::create($data);
+
+        return redirect()->route('tiposdocumentos.index')
             ->with('success', 'Tipo de documento creado correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $tiposdocumentos = tiposdocumentos::findOrFail($id);
+        return view('tiposdocumentos.show', compact('tiposdocumentos'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $tiposdocumentos = tiposdocumentos::findOrFail($id);
+        return view('tiposdocumentos.edit', compact('tiposdocumentos'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $tiposdocumentos = tiposdocumentos::findOrFail($id);
+
+        $data = $request->validate([
+            'Denominacion' => 'required|string|max:100',
+            'Observaciones' => 'required|string|max:200',
+            'TiposdocumentosPDF' => 'nullable|mimes:pdf|max:200'
+        ]);
+
+        if ($request->hasFile('TiposdocumentosPDF')) {
+
+            if ($tiposdocumentos->TiposdocumentosPDF) {
+                Storage::disk('public')->delete('pdfs/' . $tiposdocumentos->TiposdocumentosPDF);
+            }
+
+            $nombreArchivo = 'tipdoc_' . time() . '.' . $request->file('TiposdocumentosPDF')->extension();
+
+            $request->file('TiposdocumentosPDF')->storeAs('pdfs', $nombreArchivo, 'public');
+
+            $data['TiposdocumentosPDF'] = $nombreArchivo;
+        }
+
+        $tiposdocumentos->update($data);
+
+        return redirect()->route('tiposdocumentos.index')
+            ->with('success', 'Tipo de documento actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $tiposdocumentos = tiposdocumentos::findOrFail($id);
+
+        if ($tiposdocumentos->TiposdocumentosPDF) {
+            Storage::disk('public')->delete('pdfs/' . $tiposdocumentos->TiposdocumentosPDF);
+        }
+
+        $tiposdocumentos->delete();
+
+        return redirect()->route('tiposdocumentos.index')
+            ->with('success', 'Tipo de documento eliminado correctamente');
     }
 }
-
-

@@ -15,6 +15,7 @@ class tiposdocumentos extends Model
     protected $fillable = [
         'Denominacion',
         'Observaciones',
+        'TiposdocumentosPDF',
     ];
 
     public $timestamps = false;

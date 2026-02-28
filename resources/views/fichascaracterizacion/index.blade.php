@@ -1,64 +1,68 @@
 @extends('adminlte::page')
 
-@section('title', 'Fichas de Caracterización')
+@section('title', 'Fichas')
 
 @section('content')
-
     <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3>Lista de Fichas de Caracterización</h3>
-
+        <div class="card-header d-flex justify-content-between">
+            <h3 class="card-title">Listado Fichas</h3>
             <a href="{{ route('fichascaracterizacion.create') }}" class="btn btn-primary">
-                Nueva Ficha
+                <i class="fas fa-plus"></i> Nueva Ficha
             </a>
         </div>
 
         <div class="card-body">
-
-            @if(session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
-
             <table class="table table-bordered table-striped">
                 <thead class="thead-dark">
                 <tr>
-                    <th>NIS</th>
                     <th>Código</th>
                     <th>Denominación</th>
                     <th>Cupo</th>
-                    <th>Fecha Inicio</th>
-                    <th>Fecha Fin</th>
-                    <th>Observaciones</th>
-                    <th>Centro (NIS)</th>
-                    <th>Programa (NIS)</th>
+                    <th>Fechas</th>
+                    <th class="text-center">PDF</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
                 </thead>
+
                 <tbody>
-                @forelse($fichascaracterizacion as $ficha)
+                @foreach($fichas as $ficha)
                     <tr>
-                        <td>{{ $ficha->NIS }}</td>
                         <td>{{ $ficha->Codigo }}</td>
                         <td>{{ $ficha->Denominacion }}</td>
                         <td>{{ $ficha->Cupo }}</td>
-                        <td>{{ $ficha->FechaInicio }}</td>
-                        <td>{{ $ficha->FechaFin }}</td>
-                        <td>{{ $ficha->Observaciones }}</td>
-                        <td>{{ $ficha->tblcentroformacion_NIS }}</td>
-                        <td>{{ $ficha->tblprogramasdeformacion_NIS }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="9" class="text-center">
-                            No hay fichas registradas
+                        <td>{{ $ficha->FechaInicio }} - {{ $ficha->FechaFin }}</td>
+
+                        <td class="text-center">
+                            @if($ficha->FichascaracterizacionEPS)
+                                <a href="{{ asset('storage/pdfs/' . $ficha->FichascaracterizacionEPS) }}"
+                                   target="_blank" class="btn btn-danger btn-sm">
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>
+                            @endif
+                        </td>
+
+                        <td class="text-center">
+                            <a href="{{ route('fichascaracterizacion.show', $ficha->NIS) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <a href="{{ route('fichascaracterizacion.edit', $ficha->NIS) }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <form action="{{ route('fichascaracterizacion.destroy', $ficha->NIS) }}" method="POST" style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('¿Seguro que deseas eliminar?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
-                @endforelse
+                @endforeach
                 </tbody>
             </table>
-
         </div>
     </div>
-
-@endsection
+@stop

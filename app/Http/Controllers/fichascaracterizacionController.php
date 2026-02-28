@@ -4,78 +4,107 @@ namespace App\Http\Controllers;
 
 use App\Models\fichascaracterizacion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class fichascaracterizacionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $fichascaracterizacion = fichascaracterizacion::all();
-
-        return view('fichascaracterizacion.index', compact('fichascaracterizacion'));
+        $fichas = fichascaracterizacion::all();
+        return view('fichascaracterizacion.index', compact('fichas'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('fichascaracterizacion.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'Codigo' => 'required|integer',
             'Denominacion' => 'required|string|max:200',
             'Cupo' => 'required|integer',
             'FechaInicio' => 'required|date',
             'FechaFin' => 'required|date',
-            'Observaciones' => 'required|string|max:200',
+            'Observaciones' => 'nullable|string|max:200',
             'tblcentroformacion_NIS' => 'required|integer',
             'tblprogramasdeformacion_NIS' => 'required|integer',
+            'FichascaracterizacionEPS' => 'required|mimes:pdf|max:2048'
         ]);
 
-        fichascaracterizacion::create($request->all());
 
-        return redirect()
-            ->route('fichascaracterizacion.index')
-            ->with('success', 'Ficha creada correctamente');
-    }
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        //$data['Denominacion']= Crypt::encrypt($data['Denominacion']);
+        //ENCRIPTACIÓN DE LA VARIABLE Denominacion DE LA TABLA fichascaracterizacion
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
+        if ($request->hasFile('FichascaracterizacionEPS')) {
+            $nombreArchivo = 'ficha_' . time() . '.' . $request->file('FichascaracterizacionEPS')->extension();
+            $request->file('FichascaracterizacionEPS')->storeAs('pdfs', $nombreArchivo, 'public');
+            $data['FichascaracterizacionEPS'] = $nombreArchivo;
+        }
+
+        fichascaracterizacion::create($data);
+
+        return redirect()->route('fichascaracterizacion.index')
+            ->with('success', 'Registro guardado correctamente');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function show($id)
     {
-        //
+        $ficha = fichascaracterizacion::findOrFail($id);
+        return view('fichascaracterizacion.show', compact('ficha'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function edit($id)
     {
-        //
+        $ficha = fichascaracterizacion::findOrFail($id);
+        return view('fichascaracterizacion.edit', compact('ficha'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $ficha = fichascaracterizacion::findOrFail($id);
+
+        $data = $request->validate([
+            'Codigo' => 'required|integer',
+            'Denominacion' => 'required|string|max:200',
+            'Cupo' => 'required|integer',
+            'FechaInicio' => 'required|date',
+            'FechaFin' => 'required|date',
+            'Observaciones' => 'nullable|string|max:200',
+            'tblcentroformacion_NIS' => 'required|integer',
+            'tblprogramasdeformacion_NIS' => 'required|integer',
+            'FichascaracterizacionEPS' => 'nullable|mimes:pdf|max:2048'
+        ]);
+
+        if ($request->hasFile('FichascaracterizacionEPS')) {
+
+            if ($ficha->FichascaracterizacionEPS) {
+                Storage::disk('public')->delete('pdfs/' . $ficha->FichascaracterizacionEPS);
+            }
+
+            $nombreArchivo = 'ficha_' . time() . '.' . $request->file('FichascaracterizacionEPS')->extension();
+            $request->file('FichascaracterizacionEPS')->storeAs('pdfs', $nombreArchivo, 'public');
+            $data['FichascaracterizacionEPS'] = $nombreArchivo;
+        }
+
+        $ficha->update($data);
+
+        return redirect()->route('fichascaracterizacion.index')
+            ->with('success', 'Registro actualizado correctamente');
+    }
+
+    public function destroy($id)
+    {
+        $ficha = fichascaracterizacion::findOrFail($id);
+
+        if ($ficha->FichascaracterizacionEPS) {
+            Storage::disk('public')->delete('pdfs/' . $ficha->FichascaracterizacionEPS);
+        }
+
+        $ficha->delete();
+
+        return redirect()->route('fichascaracterizacion.index')
+            ->with('success', 'Registro eliminado correctamente');
     }
 }
