@@ -19,6 +19,7 @@ class enteconformador extends Model
         'Direccion',
         'Telefono',
         'CorreoInstitucional',
+        'EnteconformadorPDF',
     ];
 
     public $timestamps = false;

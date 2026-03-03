@@ -4,30 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\enteconformador;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class enteconformadorController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        $enteconformador = enteconformador::all();
-
-        return view('enteconformador.index', compact('enteconformador'));
+        $entes = enteconformador::all();
+        return view('enteconformador.index', compact('entes'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('enteconformador.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -37,44 +28,97 @@ class enteconformadorController extends Controller
             'Direccion' => 'required',
             'Telefono' => 'required',
             'CorreoInstitucional' => 'required|email',
+            'EnteconformadorPDF' => 'required|mimes:pdf|max:2048',
         ]);
 
-        enteconformador::create($request->all());
+        //$data['RazonSocial']= Crypt::encrypt($data['RazonSocial']);
+        //ENCRIPTACIÓN DE LA VARIABLE RazonSocial DE LA TABLA Enteconformador
 
-        return redirect()
-            ->route('enteconformador.index')
+
+        $nombrePDF = null;
+
+        if ($request->hasFile('EnteconformadorPDF')) {
+            $nombrePDF = time().'_'.$request->file('EnteconformadorPDF')->getClientOriginalName();
+            $request->file('EnteconformadorPDF')->storeAs('public/pdfs', $nombrePDF);
+        }
+
+        enteconformador::create([
+            'TipoDoc' => $request->TipoDoc,
+            'NumeroDoc' => $request->NumeroDoc,
+            'RazonSocial' => $request->RazonSocial,
+            'Direccion' => $request->Direccion,
+            'Telefono' => $request->Telefono,
+            'CorreoInstitucional' => $request->CorreoInstitucional,
+            'EnteconformadorPDF' => $nombrePDF,
+        ]);
+
+        return redirect()->route('enteconformador.index')
             ->with('success', 'Ente conformador creado correctamente');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $ente = enteconformador::findOrFail($id);
+        return view('enteconformador.show', compact('ente'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        $ente = enteconformador::findOrFail($id);
+        return view('enteconformador.edit', compact('ente'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $ente = enteconformador::findOrFail($id);
+
+        $request->validate([
+            'TipoDoc' => 'required',
+            'NumeroDoc' => 'required',
+            'RazonSocial' => 'required',
+            'Direccion' => 'required',
+            'Telefono' => 'required',
+            'CorreoInstitucional' => 'required|email',
+            'EnteconformadorPDF' => 'nullable|mimes:pdf|max:2048',
+        ]);
+
+        $nombrePDF = $ente->EnteconformadorPDF;
+
+        if ($request->hasFile('EnteconformadorPDF')) {
+
+            if ($ente->EnteconformadorPDF) {
+                Storage::delete('public/pdfs/'.$ente->EnteconformadorPDF);
+            }
+
+            $nombrePDF = time().'_'.$request->file('EnteconformadorPDF')->getClientOriginalName();
+            $request->file('EnteconformadorPDF')->storeAs('public/pdfs', $nombrePDF);
+        }
+
+        $ente->update([
+            'TipoDoc' => $request->TipoDoc,
+            'NumeroDoc' => $request->NumeroDoc,
+            'RazonSocial' => $request->RazonSocial,
+            'Direccion' => $request->Direccion,
+            'Telefono' => $request->Telefono,
+            'CorreoInstitucional' => $request->CorreoInstitucional,
+            'EnteconformadorPDF' => $nombrePDF,
+        ]);
+
+        return redirect()->route('enteconformador.index')
+            ->with('success', 'Ente conformador actualizado correctamente');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $ente = enteconformador::findOrFail($id);
+
+        if ($ente->EnteconformadorPDF) {
+            Storage::delete('public/pdfs/'.$ente->EnteconformadorPDF);
+        }
+
+        $ente->delete();
+
+        return redirect()->route('enteconformador.index')
+            ->with('success', 'Ente conformador eliminado correctamente');
     }
 }

@@ -19,6 +19,7 @@ class programasdeformacion extends Model
         'Codigo',
         'Denominacion',
         'Observaciones',
+        'ProgramasdeformacionPDF',
     ];
 
     public $timestamps = false;

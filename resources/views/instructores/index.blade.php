@@ -5,63 +5,59 @@
 @section('content')
     <div class="card">
         <div class="card-header d-flex justify-content-between">
-            <h3>Lista de Instructores</h3>
+            <h3 class="card-title">Listado de Instructores</h3>
             <a href="{{ route('instructores.create') }}" class="btn btn-primary">
-                Nuevo Instructor
+                <i class="fas fa-plus"></i> Nuevo Instructor
             </a>
         </div>
 
         <div class="card-body">
-
             @if(session('success'))
                 <div class="alert alert-success">
                     {{ session('success') }}
                 </div>
             @endif
 
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover">
-                    <thead class="thead-dark">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Documento</th>
+                    <th>Nombre Completo</th>
+                    <th>Teléfono</th>
+                    <th>Correo Institucional</th>
+                    <th>Sexo</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach($instructores as $instructor)
                     <tr>
-                        <th>NIS</th>
-                        <th>TipoDoc</th>
-                        <th>NumeroDoc</th>
-                        <th>Nombres</th>
-                        <th>Apellidos</th>
-                        <th>Direccion</th>
-                        <th>Telefono</th>
-                        <th>CorreoInstitucional</th>
-                        <th>CorreoPersonal</th>
-                        <th>Sexo</th>
-                        <th>FechaNacimiento</th>
-                        <th>tbltiposdocumentos_NIS</th>
-                        <th>tbleps_NIS</th>
-                        <th>tblrolesadministrativos_NIS</th>
+                        <td>{{ $instructor->NumeroDoc }}</td>
+                        <td>{{ $instructor->Nombres }} {{ $instructor->Apellidos }}</td>
+                        <td>{{ $instructor->Telefono }}</td>
+                        <td>{{ $instructor->CorreoInstitucional }}</td>
+                        <td>{{ $instructor->Sexo }}</td>
+                        <td class="text-center">
+                            <a href="{{ route('instructores.show', $instructor->NIS) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{{ route('instructores.edit', $instructor->NIS) }}" class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form action="{{ route('instructores.destroy', $instructor->NIS) }}"
+                                  method="POST" style="display:inline-block;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('¿Seguro que deseas eliminar?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
                     </tr>
-                    </thead>
-                    <tbody>
-                    @foreach($instructores as $instructor)
-                        <tr>
-                            <td>{{ $instructor->NIS }}</td>
-                            <td>{{ $instructor->TipoDoc }}</td>
-                            <td>{{ $instructor->NumeroDoc }}</td>
-                            <td>{{ $instructor->Nombres }}</td>
-                            <td>{{ $instructor->Apellidos }}</td>
-                            <td>{{ $instructor->Direccion }}</td>
-                            <td>{{ $instructor->Telefono }}</td>
-                            <td>{{ $instructor->CorreoInstitucional }}</td>
-                            <td>{{ $instructor->CorreoPersonal }}</td>
-                            <td>{{ $instructor->Sexo }}</td>
-                            <td>{{ $instructor->FechaNacimiento }}</td>
-                            <td>{{ $instructor->tbltiposdocumentos_NIS }}</td>
-                            <td>{{ $instructor->tbleps_NIS }}</td>
-                            <td>{{ $instructor->tblrolesadministrativos_NIS }}</td>
-                        </tr>
-                    @endforeach
-                    </tbody>
-                </table>
-            </div>
-
+                @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 @stop

@@ -9,12 +9,14 @@
         </div>
 
         <div class="card-body">
-            <form method="POST" action="{{ route('programasdeformacion.store') }}">
+            <form method="POST"
+                  action="{{ route('programasdeformacion.store') }}"
+                  enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-group">
                     <label>Código</label>
-                    <input type="number" name="Codigo" class="form-control" required>
+                    <input type="text" name="Codigo" class="form-control" required>
                 </div>
 
                 <div class="form-group">
@@ -27,11 +29,21 @@
                     <input type="text" name="Observaciones" class="form-control" required>
                 </div>
 
-                <button type="submit" class="btn btn-success">
+                <div class="form-group">
+                    <label>PDF del Programa</label>
+                    <input type="file"
+                           name="ProgramasdeformacionPDF"
+                           class="form-control"
+                           accept="application/pdf"
+                           required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
                     Guardar
                 </button>
 
-                <a href="{{ route('programasdeformacion.index') }}" class="btn btn-secondary">
+                <a href="{{ route('programasdeformacion.index') }}"
+                   class="btn btn-secondary">
                     Cancelar
                 </a>
             </form>
