@@ -3,12 +3,11 @@
 @section('title', 'Aprendices')
 
 @section('content')
-    <div class="card shadow">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <h3 class="card-title">Lista de Aprendices</h3>
 
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="mb-0">Lista de Aprendices</h3>
-
-            <a href="{{ route('aprendices.create') }}" class="btn btn-primary btn-sm">
+            <a href="{{ route('aprendices.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Nuevo Aprendiz
             </a>
         </div>
@@ -16,65 +15,87 @@
         <div class="card-body">
 
             @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <div class="alert alert-success">
                     {{ session('success') }}
-                    <button type="button" class="close" data-dismiss="alert">
-                        <span>&times;</span>
-                    </button>
                 </div>
             @endif
 
-            <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover table-sm text-center">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Documento</th>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Dirección</th>
+                    <th>Teléfono</th>
+                    <th>Correo Personal</th>
+                    <th>Correo Institucional</th>
+                    <th>Sexo</th>
+                    <th>Fecha De Nacimiento</th>
+                    <th>Tipo Documento</th>
+                    <th>EPS</th>
+                    <th>Ficha</th>
+                    <th class="text-center">PDF</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                </thead>
 
-                    <thead class="thead-dark">
+                <tbody>
+                @foreach($aprendices as $aprendiz)
                     <tr>
-                        <th>NIS</th>
-                        <th>Documento</th>
-                        <th>Nombres</th>
-                        <th>Apellidos</th>
-                        <th>Dirección</th>
-                        <th>Teléfono</th>
-                        <th>Correo Inst.</th>
-                        <th>Correo Pers.</th>
-                        <th>Sexo</th>
-                        <th>Fecha Nac.</th>
-                        <th>Tipo Doc</th>
-                        <th>EPS</th>
-                        <th>Ficha</th>
+                        <td>{{ $aprendiz->NumeroDoc }}</td>
+                        <td>{{ $aprendiz->Nombres }}</td>
+                        <td>{{ $aprendiz->Apellidos }}</td>
+                        <td>{{ $aprendiz->Direccion }}</td>
+                        <td>{{ $aprendiz->Telefono }}</td>
+                        <td>{{ $aprendiz->CorreoPersonal }}</td>
+                        <td>{{ $aprendiz->CorreoInstitucional }}</td>
+                        <td>{{ $aprendiz->Sexo }}</td>
+                        <td>{{ $aprendiz->FechaNacimiento }}</td>
+
+                        {{-- FK mostrando nombre correcto --}}
+                        <td>{{ $aprendiz->tipoDocumento->Denominacion ?? 'Sin dato' }}</td>
+                        <td>{{ $aprendiz->eps->Denominacion ?? 'Sin dato' }}</td>
+                        <td>{{ $aprendiz->ficha->Codigo ?? 'Sin dato' }}</td>
+
+                        <td class="text-center">
+                            @if(!empty($aprendiz->AprendicesPDF))
+                                <a href="{{ asset('storage/pdfs/' . $aprendiz->AprendicesPDF) }}"
+                                   target="_blank"
+                                   class="btn btn-danger btn-sm">
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>
+                            @else
+                                <span class="badge badge-secondary">Sin archivo</span>
+                            @endif
+                        </td>
+
+                        <td class="text-center">
+                            <a href="{{ route('aprendices.show',$aprendiz->NIS) }}"
+                               class="btn btn-info btn-sm">
+                                <i class="fas fa-eye"></i>
+                            </a>
+
+                            <a href="{{ route('aprendices.edit',$aprendiz->NIS) }}"
+                               class="btn btn-warning btn-sm">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <form action="{{ route('aprendices.destroy',$aprendiz->NIS) }}"
+                                  method="POST"
+                                  style="display:inline-block;">
+                                @csrf
+                                @method('DELETE')
+                                <button class="btn btn-danger btn-sm"
+                                        onclick="return confirm('¿Seguro que deseas eliminar?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
                     </tr>
-                    </thead>
-
-                    <tbody>
-                    @forelse($aprendices as $aprendiz)
-                        <tr>
-                            <td>{{ $aprendiz->NIS }}</td>
-                            <td>{{ $aprendiz->NumeroDoc }}</td>
-                            <td>{{ $aprendiz->Nombres }}</td>
-                            <td>{{ $aprendiz->Apellidos }}</td>
-                            <td>{{ $aprendiz->Direccion }}</td>
-                            <td>{{ $aprendiz->Telefono }}</td>
-                            <td class="text-break">{{ $aprendiz->CorreoInstitucional }}</td>
-                            <td class="text-break">{{ $aprendiz->CorreoPersonal }}</td>
-                            <td>{{ $aprendiz->Sexo }}</td>
-                            <td>
-                                {{ \Carbon\Carbon::parse($aprendiz->FechaNacimiento)->format('d/m/Y') }}
-                            </td>
-                            <td>{{ $aprendiz->tbltiposdocumentos_NIS }}</td>
-                            <td>{{ $aprendiz->tbleps_NIS }}</td>
-                            <td>{{ $aprendiz->tblfichascaracterizacion_NIS }}</td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="13" class="text-center text-muted">
-                                No hay aprendices registrados
-                            </td>
-                        </tr>
-                    @endforelse
-                    </tbody>
-
-                </table>
-            </div>
+                @endforeach
+                </tbody>
+            </table>
 
         </div>
     </div>
