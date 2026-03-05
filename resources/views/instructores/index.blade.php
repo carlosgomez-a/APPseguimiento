@@ -41,7 +41,7 @@
                         <td>{{ $instructor->Telefono }}</td>
                         <td>{{ $instructor->CorreoInstitucional }}</td>
                         <td>{{ $instructor->Sexo }}</td>
-                        <td>{{ $instructor->tipoDocumento->Denominacion ?? 'Sin dato' }}</td>
+                        <td>{{ $instructor->tiposdocumentos->Denominacion ?? 'Sin dato' }}</td>
                         <td>{{ $instructor->eps->Denominacion ?? 'Sin dato' }}</td>
                         <td>{{ $instructor->rolesadministrativos->Descripcion ?? 'Sin dato' }}</td>
                         <td class="text-center">

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\tiposdocumentos;
+use App\Notifications\Notificaciones;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+
 
 class tiposdocumentosController extends Controller
 {
@@ -39,7 +41,9 @@ class tiposdocumentosController extends Controller
             $data['TiposdocumentosPDF'] = $nombreArchivo;
         }
 
-        tiposdocumentos::create($data);
+        $tiposdocumentos = tiposdocumentos::create($data);
+
+        $tiposdocumentos->notify(new \App\Notifications\Notificaciones($tiposdocumentos));
 
         return redirect()->route('tiposdocumentos.index')
             ->with('success', 'Tipo de documento creado correctamente');
