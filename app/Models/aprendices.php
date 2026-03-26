@@ -33,8 +33,6 @@ class aprendices extends Model
 
     public $timestamps = false;
 
-    // 🔗 RELACIONES
-
     public function tipoDocumento()
     {
         return $this->belongsTo(tiposdocumentos::class, 'tbltiposdocumentos_NIS', 'NIS');

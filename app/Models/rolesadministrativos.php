@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class rolesadministrativos extends Model
 {
@@ -18,4 +19,9 @@ class rolesadministrativos extends Model
     ];
 
     public $timestamps = false;
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'role_id', 'NIS');
+    }
 }
